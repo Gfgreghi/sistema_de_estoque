@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from models import db, Usuario
 from main import oauth2_schema, SECRET_KEY, ALGORITHM
 from jose import jwt, JWTError
-
+from email_validator import validate_email, EmailNotValidError
 def get_db():
     try:
         Session = sessionmaker(bind=db)
@@ -22,3 +22,9 @@ def verify_token(token: str = Depends(oauth2_schema), session: Session = Depends
     if not usuario:
         raise HTTPException(status_code=401,detail="Acesso invalido")
     return usuario
+def validar_email(email: str):
+    try:
+        email_validado = validate_email(email,check_deliverability=True)
+        return email_validado.normalized
+    except EmailNotValidError:
+        raise HTTPException(status_code=400,detail="email invalido")
