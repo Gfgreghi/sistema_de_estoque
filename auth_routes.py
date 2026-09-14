@@ -51,3 +51,10 @@ async def signin(login_schema: LoginSchema, session: Session = Depends(get_db)):
             "acess_token": acess_token,
             "refresh_token": refresh_token
         }
+@auth_router.get("/refresh")
+async def use_refresh_token(usuario: Usuario = Depends(verify_token)):
+    access_token = criar_token(usuario.id)
+    return {
+                "access_token": access_token,
+                "token_type": "Bearer"
+            }
