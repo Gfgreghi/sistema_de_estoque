@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from schemas import UsuarioSchema, LoginSchema
 from sqlalchemy.orm import Session
-from dependencies import get_db, verify_token
+from dependencies import get_db, verify_token, validar_email
 from models import Usuario
 from main import bcrypt_context, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM
 from jose import jwt, JWTError
@@ -28,12 +28,13 @@ async def auth():
     }
 @auth_router.post("/signup")
 async def signup(usuario_schema: UsuarioSchema, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token)):
-    usuario = session.query(Usuario).filter(Usuario.email==usuario_schema.email).first()
+    email_validado = validar_email(usuario_schema.email)
+    usuario = session.query(Usuario).filter(Usuario.email==email_validado).first()
     if usuario:
         raise HTTPException(status_code=400,detail="email ja cadastrado")
     else:
         senha_criptografada = bcrypt_context.hash(usuario_schema.senha)
-        novo_usuario = Usuario(usuario_schema.nome,usuario_schema.email,senha_criptografada,usuario_schema.ativo,usuario_schema.admin)
+        novo_usuario = Usuario(usuario_schema.nome,email_validado,senha_criptografada,usuario_schema.ativo,usuario_schema.admin)
         session.add(novo_usuario)
         session.commit()
         return{
