@@ -27,7 +27,7 @@ async def auth():
         "mensagem": "bem vindo a rota de autenticação"
     }
 @auth_router.post("/signup")
-async def signup(usuario_schema: UsuarioSchema, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token)):
+async def signup(usuario_schema: UsuarioSchema, session: Session = Depends(get_db)):
     email_validado = validar_email(usuario_schema.email)
     usuario = session.query(Usuario).filter(Usuario.email==email_validado).first()
     if usuario:

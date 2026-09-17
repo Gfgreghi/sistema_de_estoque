@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 class UsuarioSchema(BaseModel):
     nome: str
     email: str
@@ -16,3 +16,33 @@ class LoginSchema(BaseModel):
 
 class Config:
     from_attributes = True
+
+class CorredorSchema(BaseModel):
+    nome: str
+    categoria: str
+    coluna: int
+    linha: int
+
+class Config:
+    from_attributes = True
+
+class ItemSchema(BaseModel):
+    nome: str
+    preco: float
+    quantidade: int
+
+class Config:
+    from_attributes = True
+
+class ResponseCorredor(BaseModel):
+    nome: str
+    categoria: str
+    coluna: int
+    linha: int
+    itens: List[ItemSchema]
+
+class CorredorUpdateSchema(BaseModel):
+    nome: Optional[str] = None
+    categoria: Optional[str] = None
+    coluna: Optional[int] = None
+    linha: Optional[int] = None
