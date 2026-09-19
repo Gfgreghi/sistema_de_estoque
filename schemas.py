@@ -34,15 +34,27 @@ class ItemSchema(BaseModel):
 class Config:
     from_attributes = True
 
-class ResponseCorredor(BaseModel):
+class ResponseCorredorSchema(BaseModel):
+    id: int
     nome: str
     categoria: str
     coluna: int
     linha: int
     itens: List[ItemSchema]
 
+class Config:
+    from_attributes = True
+
+class ResponseCorredorUpdateSchema(BaseModel):
+    mensagem: str
+    campos_alterados: List[str]
+    corredor: ResponseCorredorSchema
+
 class CorredorUpdateSchema(BaseModel):
     nome: Optional[str] = None
     categoria: Optional[str] = None
     coluna: Optional[int] = None
     linha: Optional[int] = None
+
+class Config:
+    from_attributes = True
