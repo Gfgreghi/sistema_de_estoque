@@ -1,8 +1,10 @@
+
 from fastapi import APIRouter, Depends, HTTPException
-from models import Usuario, Item, Estoque
+from models import Usuario, Item, Estoque, ItemEstoque
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
-from schemas import ItemSchema, CorredorSchema, ResponseCorredorSchema, CorredorUpdateSchema, ResponseCorredorUpdateSchema, ResponseItemSchema, ItemUpdateSchema, ResponseItemUpdateSchema
+from schemas import ItemSchema, CorredorSchema, CorredorUpdateSchema, ItemUpdateSchema, ItemCorredorSchema
+from schemas import ResponseCorredorSchema, ResponseItemSchema, ResponseCorredorUpdateSchema, ResponseItemUpdateSchema
 from dependencies import get_db, verify_token
 storage_router = APIRouter(prefix="/storage",tags=["storage"],dependencies=[Depends(verify_token())])
 
@@ -55,8 +57,19 @@ async def editar_corredor(id_corredor: int,corredor_update_schema: CorredorUpdat
     }
 #adcionar item ao corredor
 @storage_router.post("/corridor/{id_corridor}")
-async def adcionar_ao_corredor(id_corridor: int, item_id: int):
-    pass
+async def adcionar_ao_corredor(id_corridor: int,item_corredor_schema: ItemCorredorSchema,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
+    corredor = session.query(Estoque).filter(Estoque.id == id_corridor).first()
+    item = session.query(Item).filter(Item.id==item_corredor_schema.item_id).first()
+    if not corredor:
+        raise HTTPException(status_code=400,detail="corredor não existe")
+    if not item:
+        raise HTTPException(status_code=400,detail="item não cadastrado")
+    item_corredor = session.query(ItemEstoque).filter(and_(item_corredor_schema.item_id==ItemEstoque.item_id,id_corridor==ItemEstoque.estoque_id)).first()
+    if item_corredor:
+        raise HTTPException(status_code=400,detail="ja existe esse item nesse corredor")
+    novo_item_corredor = ItemEstoque(item_id=item_corredor_schema.item_id,estoque_id=id_corridor,quantidade=item_corredor_schema.quantidade)
+    session.add(novo_item_corredor)
+    session.commit()
 #apagar corredor
 @storage_router.delete("/corridor/{id_corredor}")
 async def deletar_corredor(id_corredor: int, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):

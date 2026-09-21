@@ -84,3 +84,8 @@ class ResponseItemUpdateSchema(BaseModel):
     mensagem: str
     campos_alterados: List[str]
     item: ResponseItemSchema
+class ItemCorredorSchema(BaseModel):
+    item_id: int
+    quantidade: Optional[int] = 1
+class Config:
+    from_attributes = True

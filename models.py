@@ -28,7 +28,7 @@ class Item(Base):
     preco = Column("preco",Float)
     preco_promocional = Column("preco_promocional",Float)
     quantidade = Column("quantidade",Integer)
-    armazenamento = relationship("Estoque",secondary="itens_estoque",back_populates="estoque")
+    estoque = relationship("Estoque",secondary="itens_estoque",back_populates="itens")
     def __init__(self, nome, quantidade,barcode, armazenamento=False,preco=0):
         self.nome = nome
         self.bar_code = barcode
@@ -42,7 +42,13 @@ class ItemEstoque(Base):
     item_id = Column("item_id",ForeignKey("itens.id"),nullable=False)
     estoque_id = Column("estoque_id",ForeignKey("estoque.id"),nullable=False)
     quantidade_corredor = Column("quantidade_corredor",Integer)
-    __table_args__ = (UniqueConstraint("item_id","estoque_id",name="uq_item_estoque"))
+    __table_args__ = (
+        UniqueConstraint(
+            "item_id",
+            "estoque_id",
+            name="uq_item_estoque"
+            ),
+        )
     def __init__(self,item_id,estoque_id,quantidade=1):
         self.item_id = item_id
         self.estoque_id = estoque_id
@@ -55,7 +61,7 @@ class Estoque(Base):
     categoria = Column("categoria",String)
     coluna = Column("coluna",Integer,nullable=False)
     linha = Column("linha",Integer,nullable=False)
-    itens = relationship("Item",secondary="itens_estoque",back_populates="itens")
+    itens = relationship("Item",secondary="itens_estoque",back_populates="estoque")
     def __init__(self,nome,categoria,coluna,linha):
         self.nome = nome
         self.categoria = categoria
