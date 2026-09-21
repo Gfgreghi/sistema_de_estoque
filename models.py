@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey, VARCHAR
+from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey, VARCHAR, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
 
 #cria a conexão do banco
@@ -42,6 +42,7 @@ class ItemEstoque(Base):
     item_id = Column("item_id",ForeignKey("itens.id"),nullable=False)
     estoque_id = Column("estoque_id",ForeignKey("estoque.id"),nullable=False)
     quantidade_corredor = Column("quantidade_corredor",Integer)
+    __table_args__ = (UniqueConstraint("item_id","estoque_id",name="uq_item_estoque"))
     def __init__(self,item_id,estoque_id,quantidade=1):
         self.item_id = item_id
         self.estoque_id = estoque_id
