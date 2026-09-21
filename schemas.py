@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
+#schemas de entrada de dados
 class UsuarioSchema(BaseModel):
     nome: str
     email: str
@@ -28,12 +29,31 @@ class Config:
 
 class ItemSchema(BaseModel):
     nome: str
-    preco: float
+    bar_code: int
+    preco: Optional[float]
     quantidade: int
 
 class Config:
     from_attributes = True
+#schemas de entrada de dados de atualização
+class CorredorUpdateSchema(BaseModel):
+    nome: Optional[str] = None
+    categoria: Optional[str] = None
+    coluna: Optional[int] = None
+    linha: Optional[int] = None
 
+class Config:
+    from_attributes = True
+
+class ItemUpdateSchema(BaseModel):
+    nome: Optional[str]
+    bar_code: Optional[int]
+    preco: Optional[float]
+    quantidade: Optional[int]
+
+class Config:
+    from_attributes = True
+#schemas de saida de dados
 class ResponseCorredorSchema(BaseModel):
     id: int
     nome: str
@@ -44,17 +64,23 @@ class ResponseCorredorSchema(BaseModel):
 
 class Config:
     from_attributes = True
+class ResponseItemSchema(BaseModel):
+    id: int
+    nome: str
+    bar_code: int
+    preco: float
+    quantidade: int
 
+class Config:
+    from_attributes = True
+
+#schema de saida de dados de atualização
 class ResponseCorredorUpdateSchema(BaseModel):
     mensagem: str
     campos_alterados: List[str]
     corredor: ResponseCorredorSchema
 
-class CorredorUpdateSchema(BaseModel):
-    nome: Optional[str] = None
-    categoria: Optional[str] = None
-    coluna: Optional[int] = None
-    linha: Optional[int] = None
-
-class Config:
-    from_attributes = True
+class ResponseItemUpdateSchema(BaseModel):
+    mensagem: str
+    campos_alterados: List[str]
+    item: ResponseItemSchema

@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from models import Usuario, Item, Estoque
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
-from schemas import ItemSchema, CorredorSchema, ResponseCorredorSchema, CorredorUpdateSchema, ResponseCorredorUpdateSchema
+from schemas import ItemSchema, CorredorSchema, ResponseCorredorSchema, CorredorUpdateSchema, ResponseCorredorUpdateSchema, ResponseItemSchema, ItemUpdateSchema, ResponseItemUpdateSchema
 from dependencies import get_db, verify_token
-storage_router = APIRouter(prefix="/storage",tags=["storage"],dependencies=[Depends(verify_token)])
+storage_router = APIRouter(prefix="/storage",tags=["storage"],dependencies=[Depends(verify_token())])
 
 @storage_router.get("/")
 async def storage():
@@ -20,7 +20,7 @@ async def visualizar_corredor(id_corredor: int, session: Session = Depends(get_d
     return corredor
 #criar corredor
 @storage_router.post("/corridor")
-async def criar_corredor(corredor_schema: CorredorSchema,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token)):
+async def criar_corredor(corredor_schema: CorredorSchema,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     if not usuario.admin:
         raise HTTPException(status_code=401,detail="Não autorizado")
     corredor = session.query(Estoque).filter(or_(and_(Estoque.coluna==corredor_schema.coluna,Estoque.linha==corredor_schema.linha),Estoque.nome==corredor_schema.nome)).first()
@@ -35,10 +35,7 @@ async def criar_corredor(corredor_schema: CorredorSchema,session: Session = Depe
     }
 #editar corredor
 @storage_router.patch("/corridor/{id_corredor}",response_model=ResponseCorredorUpdateSchema)
-async def editar_corredor(id_corredor: int,corredor_update_schema: CorredorUpdateSchema, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token)):
-    """
-    edita informações de um corredor especifico com base no id do mesmo
-    """
+async def editar_corredor(id_corredor: int,corredor_update_schema: CorredorUpdateSchema, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     if not usuario.admin:
         raise HTTPException(status_code=401,detail="não autorizado")
     corredor = session.query(Estoque).filter(Estoque.id==id_corredor).first()
@@ -56,9 +53,13 @@ async def editar_corredor(id_corredor: int,corredor_update_schema: CorredorUpdat
         "campos_alterados": campos_alterados,
         "corredor": corredor
     }
+#adcionar item ao corredor
+@storage_router.post("/corridor/{id_corridor}")
+async def adcionar_ao_corredor(id_corridor: int, item_id: int):
+    pass
 #apagar corredor
 @storage_router.delete("/corridor/{id_corredor}")
-async def deletar_corredor(id_corredor: int, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token)):
+async def deletar_corredor(id_corredor: int, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     if not usuario.admin:
         raise HTTPException(status_code=401,detail="Não Autorizado")
     corredor = session.query(Estoque).filter(id_corredor==Estoque.id).first()
@@ -69,3 +70,61 @@ async def deletar_corredor(id_corredor: int, session: Session = Depends(get_db),
 """
 Endpoints de item
 """
+#cadastrar item manualmente
+@storage_router.post("/item/",response_model=ResponseItemSchema)
+async def cadastrar_item(item_schema: ItemSchema, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
+    if not usuario.admin:
+        raise  HTTPException(status_code=401,detail="Não autorizado")
+    item = session.query(Item).filter(item_schema.bar_code==Item.bar_code).first()
+    if item:
+        raise HTTPException(status_code=400,detail="o Item ja esta cadastrado")
+    novo_item = Item(nome=item_schema.nome,barcode=item_schema.bar_code,quantidade=item_schema.quantidade,preco=item_schema.preco)
+    session.add(novo_item)
+    session.commit()
+    return novo_item
+#cadastrar item via barcode
+@storage_router.post("/item/barcode/{codigo_de_barras}")
+async def cadastrar_via_barcode(codigo_de_barras: int, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
+    pass
+#editar informações de item
+@storage_router.patch("/item/{item_id}}",response_model=ResponseItemUpdateSchema)
+async def editar_item(item_id: int,item_update_schema: ItemUpdateSchema,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
+    if not usuario.admin:
+        raise HTTPException(status_code=401,detail="não autorizado")
+    item = session.query(Item).filter(Item.id==item_id).first()
+    if not item:
+        raise HTTPException(status_code=400,detail="item não cadastrado")
+    atualizacao_item = item_update_schema.model_dump(exclude_unset=True)
+    campos_alterados = []
+    for campo, valor in atualizacao_item.items():
+        setattr(item, campo, valor)
+        campos_alterados.append(campo)
+    session.commit()
+    session.refresh(item)
+    return{
+        "mensagem": f"informações do item {item.id} alterado com sucesso",
+        "campos_alterados": campos_alterados,
+        "corredor": item
+    }
+#deletar cadastro de item
+@storage_router.delete("/item/{item_id}",response_model=ItemSchema)
+async def deletar_item(item_id: int,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
+    if not usuario.admin:
+        raise HTTPException(status_code=401,detail="Não Autorizado")
+    item = session.query(Item).filter(item_id==Item.id).first()
+    if not item:
+        raise HTTPException(status_code=400,detail="item_não_cadastrado")
+    session.delete(item)
+    session.commit()
+    return {
+        "item removido": item
+    }
+#visualizar item
+@storage_router.get("/item/{item_id}",response_model=ResponseItemSchema)
+async def visualizar_item(item_id: int, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
+    item = session.query(Item).filter(item_id==Item.id).first()
+    if not item:
+        raise HTTPException(status_code=400,detail="item não cadastrado")
+    return item
+#visualizar itens de um corredor
+

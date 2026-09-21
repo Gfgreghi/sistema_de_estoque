@@ -7,9 +7,9 @@ from main import bcrypt_context, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORI
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 auth_router = APIRouter(prefix="/auth",tags=["auth"])
-def criar_token(id_usuario,duracao_token=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
+def criar_token(id_usuario,tipo="access_token",duracao_token=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
     data_expiracao =datetime.now(timezone.utc) + duracao_token
-    dic_info = {"sub": str(id_usuario), "exp": data_expiracao}
+    dic_info = {"sub": str(id_usuario), "exp": data_expiracao, "type": tipo}
     jwt_codificado = jwt.encode(dic_info, SECRET_KEY,ALGORITHM)
     token = jwt_codificado
     return token
@@ -47,13 +47,13 @@ async def signin(login_schema: LoginSchema, session: Session = Depends(get_db)):
         raise HTTPException(status_code=400,detail="usuario não encontrado ou credenciais invalidas")
     else:
         acess_token = criar_token(usuario.id)
-        refresh_token = criar_token(usuario.id,timedelta(days=7))
+        refresh_token = criar_token(usuario.id,"refresh_token",timedelta(days=7))
         return {
             "acess_token": acess_token,
             "refresh_token": refresh_token
         }
 @auth_router.post("/refresh")
-async def use_refresh_token(usuario: Usuario = Depends(verify_token)):
+async def use_refresh_token(usuario: Usuario = Depends(verify_token("refresh_token"))):
     access_token = criar_token(usuario.id)
     return {
                 "access_token": access_token,
