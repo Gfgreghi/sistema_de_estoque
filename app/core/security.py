@@ -3,6 +3,8 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
+from sqlalchemy.orm import Session
+from app.models import Usuario
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/signin")
 bcrypt_context = CryptContext(schemes=["bcrypt"],deprecated=["auto"])
 def criar_token(id_usuario,tipo="access_token",duracao_token=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)):
@@ -14,7 +16,7 @@ def criar_token(id_usuario,tipo="access_token",duracao_token=timedelta(minutes=s
     token = jwt_codificado
     return token
 
-def autenticar_usuario(Usuario, email,senha,session):
+def autenticar_usuario(email,senha,session):
     usuario = session.query(Usuario).filter(Usuario.email==email).first()
     if not usuario:
         return False
