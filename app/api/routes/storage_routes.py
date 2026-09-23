@@ -1,11 +1,17 @@
 
 from fastapi import APIRouter, Depends, HTTPException
-from models import Usuario, Item, Estoque, ItemEstoque
+from app.models import Usuario, Item, Corredor, ItemCorredor
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
-from schemas import ItemSchema, CorredorSchema, CorredorUpdateSchema, ItemUpdateSchema, ItemCorredorSchema
-from schemas import ResponseCorredorSchema, ResponseItemSchema, ResponseCorredorUpdateSchema, ResponseItemUpdateSchema
-from dependencies import get_db, verify_token
+from app.schemas.entry import ItemSchema, CorredorSchema, ItemCorredorSchema
+from app.schemas.update import ItemUpdateSchema, CorredorUpdateSchema
+from app.schemas.response import (
+    ResponseCorredorSchema, 
+    ResponseItemSchema, 
+    ResponseCorredorUpdateSchema, 
+    ResponseItemUpdateSchema
+    )
+from app.api.dependencies import get_db, verify_token
 storage_router = APIRouter(prefix="/storage",tags=["storage"],dependencies=[Depends(verify_token())])
 
 @storage_router.get("/")
@@ -16,7 +22,7 @@ async def storage():
 #visualizar corredor
 @storage_router.get("/corridor/{id_corredor}",response_model=ResponseCorredorSchema)
 async def visualizar_corredor(id_corredor: int, session: Session = Depends(get_db)):
-    corredor = session.query(Estoque).filter(id_corredor==Estoque.id).first()
+    corredor = session.query(Corredor).filter(id_corredor==Corredor.id).first()
     if not corredor:
         raise HTTPException(status_code=400,detail="corredor não encontrado")
     return corredor
@@ -25,10 +31,10 @@ async def visualizar_corredor(id_corredor: int, session: Session = Depends(get_d
 async def criar_corredor(corredor_schema: CorredorSchema,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     if not usuario.admin:
         raise HTTPException(status_code=401,detail="Não autorizado")
-    corredor = session.query(Estoque).filter(or_(and_(Estoque.coluna==corredor_schema.coluna,Estoque.linha==corredor_schema.linha),Estoque.nome==corredor_schema.nome)).first()
+    corredor = session.query(Corredor).filter(or_(and_(Corredor.coluna==corredor_schema.coluna,Corredor.linha==corredor_schema.linha),Corredor.nome==corredor_schema.nome)).first()
     if corredor:
         raise HTTPException(status_code=400,detail=f"um corredor de id {corredor.id} já existe nessa posição ")
-    novo_corredor = Estoque(corredor_schema.nome,corredor_schema.categoria,corredor_schema.coluna,corredor_schema.linha)
+    novo_corredor = Corredor(corredor_schema.nome,corredor_schema.categoria,corredor_schema.coluna,corredor_schema.linha)
     session.add(novo_corredor)
     session.commit()
     return {
@@ -40,7 +46,7 @@ async def criar_corredor(corredor_schema: CorredorSchema,session: Session = Depe
 async def editar_corredor(id_corredor: int,corredor_update_schema: CorredorUpdateSchema, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     if not usuario.admin:
         raise HTTPException(status_code=401,detail="não autorizado")
-    corredor = session.query(Estoque).filter(Estoque.id==id_corredor).first()
+    corredor = session.query(Corredor).filter(Corredor.id==id_corredor).first()
     if not corredor:
         raise HTTPException(status_code=400,detail="corredor inexistente")
     atualizacao_corredor = corredor_update_schema.model_dump(exclude_unset=True)
@@ -58,16 +64,16 @@ async def editar_corredor(id_corredor: int,corredor_update_schema: CorredorUpdat
 #adcionar item ao corredor
 @storage_router.post("/corridor/{id_corridor}")
 async def adcionar_ao_corredor(id_corridor: int,item_corredor_schema: ItemCorredorSchema,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
-    corredor = session.query(Estoque).filter(Estoque.id == id_corridor).first()
+    corredor = session.query(Corredor).filter(Corredor.id == id_corridor).first()
     item = session.query(Item).filter(Item.id==item_corredor_schema.item_id).first()
     if not corredor:
         raise HTTPException(status_code=400,detail="corredor não existe")
     if not item:
         raise HTTPException(status_code=400,detail="item não cadastrado")
-    item_corredor = session.query(ItemEstoque).filter(and_(item_corredor_schema.item_id==ItemEstoque.item_id,id_corridor==ItemEstoque.estoque_id)).first()
+    item_corredor = session.query(ItemCorredor).filter(and_(item_corredor_schema.item_id==ItemCorredor.item_id,id_corridor==ItemCorredor.corredor_id)).first()
     if item_corredor:
         raise HTTPException(status_code=400,detail="ja existe esse item nesse corredor")
-    novo_item_corredor = ItemEstoque(item_id=item_corredor_schema.item_id,estoque_id=id_corridor,quantidade=item_corredor_schema.quantidade)
+    novo_item_corredor = ItemCorredor(item_id=item_corredor_schema.item_id,corredor_id=id_corridor,quantidade=item_corredor_schema.quantidade)
     session.add(novo_item_corredor)
     session.commit()
 #apagar corredor
@@ -75,7 +81,7 @@ async def adcionar_ao_corredor(id_corridor: int,item_corredor_schema: ItemCorred
 async def deletar_corredor(id_corredor: int, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     if not usuario.admin:
         raise HTTPException(status_code=401,detail="Não Autorizado")
-    corredor = session.query(Estoque).filter(id_corredor==Estoque.id).first()
+    corredor = session.query(Corredor).filter(id_corredor==Corredor.id).first()
     if not corredor:
         raise HTTPException(status_code=400,detail="corredor não existe")
     session.delete(corredor)
@@ -100,7 +106,7 @@ async def cadastrar_item(item_schema: ItemSchema, session: Session = Depends(get
 async def cadastrar_via_barcode(codigo_de_barras: int, session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     pass
 #editar informações de item
-@storage_router.patch("/item/{item_id}}",response_model=ResponseItemUpdateSchema)
+@storage_router.patch("/item/{item_id}",response_model=ResponseItemUpdateSchema)
 async def editar_item(item_id: int,item_update_schema: ItemUpdateSchema,session: Session = Depends(get_db),usuario: Usuario = Depends(verify_token())):
     if not usuario.admin:
         raise HTTPException(status_code=401,detail="não autorizado")

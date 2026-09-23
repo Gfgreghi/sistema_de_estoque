@@ -1,11 +1,6 @@
 from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey, VARCHAR, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
-
-#cria a conexão do banco
-db = create_engine("sqlite:///banco.db")
-#cria a base do banco
-Base = declarative_base()
-
+from app.core.db import Base
 class Usuario(Base):
     __tablename__ = "usuarios"
     id = Column("id", Integer, primary_key=True,autoincrement=True,nullable=False)
@@ -28,40 +23,40 @@ class Item(Base):
     preco = Column("preco",Float)
     preco_promocional = Column("preco_promocional",Float)
     quantidade = Column("quantidade",Integer)
-    estoque = relationship("Estoque",secondary="itens_estoque",back_populates="itens")
+    corredores = relationship("Corredor",secondary="itens_corredores",back_populates="itens")
     def __init__(self, nome, quantidade,barcode, armazenamento=False,preco=0):
         self.nome = nome
         self.bar_code = barcode
         self.preco = preco
         self.quantidade = quantidade
         self.armazenamento = armazenamento
-class ItemEstoque(Base):
-    __tablename__ = "itens_estoque"
+class ItemCorredor(Base):
+    __tablename__ = "itens_corredores"
 
     id = Column("id",Integer,primary_key=True,autoincrement=True,nullable=False)
     item_id = Column("item_id",ForeignKey("itens.id"),nullable=False)
-    estoque_id = Column("estoque_id",ForeignKey("estoque.id"),nullable=False)
+    corredor_id = Column("corredor_id",ForeignKey("corredores.id"),nullable=False)
     quantidade_corredor = Column("quantidade_corredor",Integer)
     __table_args__ = (
         UniqueConstraint(
             "item_id",
-            "estoque_id",
+            "corredor_id",
             name="uq_item_estoque"
             ),
         )
-    def __init__(self,item_id,estoque_id,quantidade=1):
+    def __init__(self,item_id,corredor_id,quantidade=1):
         self.item_id = item_id
-        self.estoque_id = estoque_id
+        self.corredor_id = corredor_id
         self.quantidade_corredor = quantidade
-class Estoque(Base):
-    __tablename__ = "estoque"
+class Corredor(Base):
+    __tablename__ = "corredores"
 
     id = Column("id", Integer, primary_key=True,autoincrement=True,nullable=False)
     nome = Column("nome",String)
     categoria = Column("categoria",String)
     coluna = Column("coluna",Integer,nullable=False)
     linha = Column("linha",Integer,nullable=False)
-    itens = relationship("Item",secondary="itens_estoque",back_populates="estoque")
+    itens = relationship("Item",secondary="itens_corredores",back_populates="corredores")
     def __init__(self,nome,categoria,coluna,linha):
         self.nome = nome
         self.categoria = categoria
