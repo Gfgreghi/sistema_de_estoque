@@ -1,7 +1,9 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import sessionmaker, Session
-from models import db, Usuario
-from main import oauth2_schema, SECRET_KEY, ALGORITHM
+from app.models import Usuario
+from app.core.config import settings
+from app.core.security import oauth2_schema
+from app.core.db import db
 from jose import jwt, JWTError
 from email_validator import validate_email, EmailNotValidError
 def get_db():
@@ -12,10 +14,13 @@ def get_db():
     finally:
         session.close()
     return session
+#get current_user
+#get 
+
 def verify_token(tipo_esperado: str = "access_token"):
         def dependency(token: str = Depends(oauth2_schema), session: Session = Depends(get_db)):
             try:
-                dict_info = jwt.decode(token, SECRET_KEY, ALGORITHM)
+                dict_info = jwt.decode(token, settings.SECRET_KEY, settings.ALGORITHM)
                 id_usuario = dict_info.get("sub")
                 tipo_token = dict_info.get("type")
                 if tipo_token != tipo_esperado:
