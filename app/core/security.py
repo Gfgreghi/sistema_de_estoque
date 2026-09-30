@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.models import Usuario
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/signin")
 bcrypt_context = CryptContext(schemes=["bcrypt"],deprecated=["auto"])
-def criar_token(id_usuario,tipo="access_token",duracao_token=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)):
+def criar_token(id_usuario: int,tipo: str="access_token",duracao_token=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)):
     if tipo == "refresh_token":
         duracao_token= timedelta(days=7)
     data_expiracao =datetime.now(timezone.utc) + duracao_token
@@ -26,3 +26,22 @@ def autenticar_usuario(email,senha,session):
 
 def password_hash(password):
     passwordhash = bcrypt_context.hash(password)
+    return passwordhash
+
+PERMISSIONS = {
+    "admin": {
+        "*"
+    },
+    "user": {
+        "read_corridor"
+        "read_item"
+        "create_user"
+        "read_user"
+    },
+    "operator": {
+        "read_corridor"
+        "create_item"
+        "edit_item"
+        "change_item_price"
+    }
+}

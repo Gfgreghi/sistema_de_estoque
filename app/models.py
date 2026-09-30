@@ -8,13 +8,13 @@ class Usuario(Base):
     email= Column("email",String,nullable=False)
     senha = Column("senha",String,nullable=False)
     ativo = Column("ativo", Boolean)
-    admin = Column("admin", Boolean,default=False)
-    def __init__(self, nome, email, senha, ativo=True,admin=False):
+    role = Column("Role", String, default="User")
+    def __init__(self, nome, email, senha, ativo=True,role="User"):
         self.nome = nome
         self.email = email
         self.senha = senha
         self.ativo = ativo
-        self.admin = admin
+        self.role = role
 class Item(Base):
     __tablename__ = "itens"
     id = Column("id", Integer, primary_key=True,autoincrement=True,nullable=False)
