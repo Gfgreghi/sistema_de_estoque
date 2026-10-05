@@ -20,7 +20,7 @@ def read(id_corredor: int, session: SessionDep) -> Corredor:
         raise HTTPException(status_code=400,detail="corredor não encontrado")
     return corredor
 #editar corredor
-def update(corridor_id,corredor_update_schema: CorredorUpdateSchema, session: SessionDep) -> dict:
+def update(corridor_id,corredor_update_schema: CorredorUpdateSchema, session: SessionDep) -> list:
     corredor = session.query(Corredor).filter(Corredor.id==corridor_id).first()
     if not corredor:
         raise HTTPException(status_code=400,detail="corredor inexistente")
@@ -31,11 +31,7 @@ def update(corridor_id,corredor_update_schema: CorredorUpdateSchema, session: Se
         campos_alterados.append(campo)
     session.commit()
     session.refresh(corredor)
-    return {
-        "campos_alterados": campos_alterados,
-        "id_corredor": corredor.id,
-        "corredor": corredor
-    }
+    return [campos_alterados,corredor]
 #apagar corredor
 def delete(corridor_id: int, session: SessionDep):
     corredor = session.query(Corredor).filter(corridor_id==Corredor.id).first()

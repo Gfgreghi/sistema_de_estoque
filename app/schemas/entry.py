@@ -1,10 +1,18 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
-class UsuarioSchema(BaseModel):
+class UserCreate(BaseModel):
     nome: str
     email: str
     senha:str
+
+class AdminUserCreate(BaseModel):
+    nome: str
+    email: str
+    senha:str
+    role: str = "user"
+    ativo: bool = True
+
 class Config:
     from_attributes = True
 

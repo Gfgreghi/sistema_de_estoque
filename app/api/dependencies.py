@@ -17,7 +17,7 @@ def get_db():
     return session
 SessionDep = Annotated[Session,Depends(get_db)]
 #get current_user
-async def current_user(user_id: int, session: SessionDep):
+def current_user(user_id: int, session: SessionDep):
         user = session.query(Usuario).filter(Usuario.id==user_id).first()
         if not user:
             raise HTTPException(status_code=401,detail="Acesso invalido")
@@ -62,22 +62,9 @@ def has_permission(user_id: int,required_permission: str,session: SessionDep):
     role = get_role(user_id,session)
     if role not in PERMISSIONS:
         raise HTTPException(status_code=400,detail="cargo inexistente")
-    permission = PERMISSIONS[role]
-    return "*" in permission or required_permission in permission
-def require_permission(required_permission: str):
-
-    def dependency(
-        current_user: Usuario = Depends(verify_token)
-    ):
-        if not has_permission(
-            current_user.role,
-            required_permission
-        ):
-            raise HTTPException(
-                status_code=403,
-                detail="não autorizado"
-            )
-
-        return current_user
-
-    return dependency
+    role_permission = PERMISSIONS[role]
+    return "*" in role_permission or required_permission in role_permission
+def require_permission(user_id: int, required_permission: str, session: SessionDep):
+    if not has_permission(user_id,required_permission,session):
+        raise HTTPException(status_code=403,detail="Não autorizado")
+    return True

@@ -1,7 +1,8 @@
 from sqlalchemy import and_, or_
 from fastapi import APIRouter, HTTPException, Depends
+from app.models import Corredor
 import app.crud.corredores as corredores
-from app.api.dependencies import UsuarioDep, SessionDep,verify_token
+from app.api.dependencies import UsuarioDep, SessionDep,verify_token, require_permission
 from app.schemas.entry import CorredorSchema, ItemCorredorSchema
 from app.schemas.update import CorredorUpdateSchema
 from app.schemas.response import ResponseCorredorSchema, ResponseCorredorUpdateSchema 
@@ -15,12 +16,14 @@ async def storage():
     }
 #visualizar corredor
 @storage_router.get("/corridor/{id_corredor}",response_model=ResponseCorredorSchema)
-async def visualizar_corredor(id_corredor: int, session: SessionDep):
+async def visualizar_corredor(id_corredor: int, session: SessionDep,usuario: UsuarioDep):
+    require_permission(usuario.id,"view_corridor",session)
     corredor = corredores.read(id_corredor,session)
     return corredor
 #criar corredor
 @storage_router.post("/corridor")
 async def criar_corredor(corredor_schema: CorredorSchema,session: SessionDep,usuario: UsuarioDep):
+    require_permission(usuario.id,"create_corridor",session)
     novo_corredor = corredores.create(corredor_schema,session)
     return {
         "mensagem":f"corredor {novo_corredor.nome} criado com sucesso",
@@ -29,12 +32,13 @@ async def criar_corredor(corredor_schema: CorredorSchema,session: SessionDep,usu
 #editar corredor
 @storage_router.patch("/corridor/{id_corredor}",response_model=ResponseCorredorUpdateSchema)
 async def editar_corredor(id_corredor: int,corredor_update_schema: CorredorUpdateSchema, session: SessionDep,usuario: UsuarioDep):
-    novo_corredor = corredores.update(id_corredor,corredor_update_schema,session)
-    corredor = novo_corredor["corredor"]
+    require_permission(usuario.id,"edit_corridor",session)
+    novo_corredor: list = corredores.update(id_corredor,corredor_update_schema,session)
+    corredor: Corredor = novo_corredor[1]
 
     return{
         "mensagem": f"Corredor {corredor.id} alterado com sucesso",
-        "campos_alterados": novo_corredor["campos_alterados"],
+        "campos_alterados": novo_corredor[0],
         "corredor": corredor
     }
 #adcionar item ao corredor
@@ -47,6 +51,7 @@ async def adcionar_ao_corredor(id_corridor: int,item_corredor_schema: ItemCorred
 #apagar corredor
 @storage_router.delete("/corridor/{id_corredor}")
 async def deletar_corredor(id_corredor: int, session: SessionDep,usuario: UsuarioDep):
+    require_permission(usuario.id,"delete_corridor",session)
     corredor_apagado  =  corredores.delete(id_corredor, session)
     return {
         "mensagem": f"corredor de id {id_corredor} apagado com sucesso",

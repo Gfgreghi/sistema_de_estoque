@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.schemas.entry import UsuarioSchema, LoginSchema
+from app.schemas.entry import UserCreate, LoginSchema
 from app.api.dependencies import  verify_email, SessionDep, UsuarioDep
 from app.models import Usuario
 import app.crud.usuarios as user
@@ -16,7 +16,7 @@ async def auth():
         "mensagem": "bem vindo a rota de autenticação"
     }
 @auth_router.post("/signup")
-async def signup(usuario_schema: UsuarioSchema, session: SessionDep):
+async def signup(usuario_schema: UserCreate, session: SessionDep):
     email_validado = verify_email(usuario_schema.email)
     senha_criptografada = password_hash(usuario_schema.senha)
     usuario = user.create(session,usuario_schema.nome,email_validado,senha_criptografada)

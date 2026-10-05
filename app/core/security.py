@@ -33,15 +33,17 @@ PERMISSIONS = {
         "*"
     },
     "user": {
-        "read_corridor"
-        "read_item"
-        "create_user"
+        "read_corridor",
+        "read_item",
+        "create_user",
         "read_user"
     },
     "operator": {
-        "read_corridor"
-        "create_item"
-        "edit_item"
+        "read_corridor",
+        "create_item",
+        "edit_item",
+        "delete_user",
+        "view_item",
         "change_item_price"
     }
 }
