@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from app.schemas.entry import UserCreate, AdminUserCreate, LoginSchema
 from app.api.dependencies import  verify_email, SessionDep, UsuarioDep, require_permission
 from app.models import Usuario
@@ -38,6 +39,15 @@ async def edit_user(usuario_update_schema):
 @auth_router.post("/signin")
 async def signin(login_schema: LoginSchema, session: SessionDep):
     usuario = autenticar_usuario(login_schema.email,login_schema.senha,session)
+    if not usuario:
+        raise HTTPException(
+            status_code=401,
+            detail="Email ou senha inválidos"
+        )
+
+@auth_router.post("/signin-form")
+async def signin( session: SessionDep,login_schema: OAuth2PasswordRequestForm = Depends()):
+    usuario = autenticar_usuario(login_schema.username,login_schema.password,session)
     if not usuario:
         raise HTTPException(
             status_code=401,

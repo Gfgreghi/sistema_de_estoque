@@ -5,7 +5,7 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from app.models import Usuario
-oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/signin")
+oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/signin-form")
 bcrypt_context = CryptContext(schemes=["bcrypt"],deprecated=["auto"])
 def criar_token(id_usuario: int,tipo: str="access_token",duracao_token=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)):
     if tipo == "refresh_token":

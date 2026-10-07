@@ -30,3 +30,14 @@ class ResponseItemUpdateSchema(BaseModel):
     mensagem: str
     campos_alterados: List[str]
     item: ResponseItemSchema
+
+class ResponseUserSchema(BaseModel):
+    nome: str
+    email: str
+    ativo: bool
+    role: str
+
+class ResponseUserUpdateSchema(BaseModel):
+    mensagem: str
+    campos_alterados: List[str]
+    usuario: ResponseUserSchema

@@ -8,7 +8,7 @@ class Usuario(Base):
     email= Column("email",String,nullable=False)
     senha = Column("senha",String,nullable=False)
     ativo = Column("ativo", Boolean)
-    role = Column("Role", String, default="User")
+    role = Column("role", String, default="User")
     def __init__(self, nome, email, senha, ativo=True,role="User"):
         self.nome = nome
         self.email = email
