@@ -35,10 +35,14 @@ o fluxo de autenticação ocorre da seguinte forma:
 4. O token deve ser enviado nas requisições que exigem autenticação através do header `Authorization` 
 
 esse header deve ser enviado seguindo a seguinte estrutura:
-```json
+```http
 "Authorization": "Bearer {access_token}"
 ```
 
 Certos endpoints requerem certas permissões associadas a cargos (`role`) especificos.
+
 Por padrão o cargo de usuarios cadastrados por meio do endpoint `/auth/signup` é o de `user`.
-o cadastro de usuarios com outros cargos é feito através do endpoint `/auth/admin/signup`, que requer permissões de administrador (`admin`)
+
+O cadastro de usuarios com outros cargos é feito através do endpoint `/auth/admin/signup`, que requer permissões de administrador (`admin`)
+
+## Administração de Usuarios
