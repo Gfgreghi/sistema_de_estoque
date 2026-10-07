@@ -134,7 +134,7 @@ app/
 │   ├── config.py -> configuração das variaveis de ambiente
 │   └── security.py -> funções de segurança como JWT ou Hash de senha
 ├── crud/ -> operações de criação, consulta, atualização e remoção de dados
-├── models/ -> tabelas ORM sqlalchemy
+├── models/ -> modelos ORM utilizados pela aplicação
 ├── schemas/ -> schemas de entrada e saida
 └── main.py -> inicialização da aplicação
 ```
