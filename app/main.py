@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-
+from app.core.init_db import init_db
 app = FastAPI()
-
+init_db()
 from app.api.routes.auth_routes import auth_router
 from app.api.routes.storage_routes import storage_router
 from app.api.routes.item_routes import item_router

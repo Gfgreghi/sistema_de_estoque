@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.schemas.entry import UserCreate, LoginSchema
-from app.api.dependencies import  verify_email, SessionDep, UsuarioDep
+from app.schemas.entry import UserCreate, AdminUserCreate, LoginSchema
+from app.api.dependencies import  verify_email, SessionDep, UsuarioDep, require_permission
 from app.models import Usuario
 import app.crud.usuarios as user
 from app.core.security import (
@@ -23,6 +23,18 @@ async def signup(usuario_schema: UserCreate, session: SessionDep):
     return{
             "mensagem": f"usuario {usuario.nome} cadastrado com sucesso"
         }
+@auth_router.post("/admin/signup/")
+async def signup(usuario_schema: AdminUserCreate, session: SessionDep, usuario: UsuarioDep):
+    require_permission(usuario.role,"create_roleduser")
+    email_validado = verify_email(usuario_schema.email)
+    senha_criptografada = password_hash(usuario_schema.senha)
+    usuario = user.create(session,usuario_schema.nome,email_validado,senha_criptografada,usuario_schema.ativo,usuario_schema.role)
+    return{
+            "mensagem": f"usuario {usuario.nome} cadastrado com sucesso"
+        }
+@auth_router.patch("/user")
+async def edit_user(usuario_update_schema):
+    pass
 @auth_router.post("/signin")
 async def signin(login_schema: LoginSchema, session: SessionDep):
     usuario = autenticar_usuario(login_schema.email,login_schema.senha,session)

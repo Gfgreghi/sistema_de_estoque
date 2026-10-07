@@ -10,7 +10,7 @@ class CorredorUpdateSchema(BaseModel):
 class Config:
     from_attributes = True
 
-class ItemUpdateSchema(BaseModel):
+class UsuarioUpdateSchema(BaseModel):
     nome: Optional[str]
     bar_code: Optional[int]
     preco: Optional[float]
@@ -18,3 +18,15 @@ class ItemUpdateSchema(BaseModel):
 
 class Config:
     from_attributes = True
+
+class UsuarioUpdateSchema(BaseModel):
+    nome: Optional[str]
+    email: Optional[str]
+    senha: Optional[str]
+
+class AdminUsuarioUpdateSchema(BaseModel):
+    nome: Optional[str]
+    email: Optional[str]
+    senha: Optional[str]
+    ativo: Optional[bool]
+    role: Optional[str]

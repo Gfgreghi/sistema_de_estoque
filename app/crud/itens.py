@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.schemas.update import ItemUpdateSchema
+from app.schemas.update import UsuarioUpdateSchema
 from app.schemas.entry import ItemSchema
 from app.api.dependencies import SessionDep
 from app.models import Item, ItemCorredor
@@ -19,7 +19,7 @@ def read(item_id: int,session: SessionDep) -> Item:
         raise HTTPException(status_code=400,detail="item não cadastrado")
     return item
 #editar item
-def update(item_id:int, item_update_schema: ItemUpdateSchema,session: SessionDep) -> dict:
+def update(item_id:int, item_update_schema: UsuarioUpdateSchema,session: SessionDep) -> dict:
     item = session.query(Item).filter(Item.id==item_id).first()
     if not item:
         raise HTTPException(status_code=400,detail="item não cadastrado")

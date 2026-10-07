@@ -42,7 +42,7 @@ PERMISSIONS = {
         "read_corridor",
         "create_item",
         "edit_item",
-        "delete_user",
+        "delete_item",
         "view_item",
         "change_item_price"
     }

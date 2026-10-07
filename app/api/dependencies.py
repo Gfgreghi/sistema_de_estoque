@@ -51,20 +51,13 @@ def verify_email(email: str):
         return email_validado.normalized
     except EmailNotValidError:
         raise HTTPException(status_code=400,detail="email invalido")
-#retorna o cargo de um usuarrio
-def get_role(user_id: int, session: SessionDep):
-    user_role = session.query(Usuario.role).filter(Usuario.id==user_id).scalar()
-    if not user_role:
-        raise HTTPException(status_code=401,detail="Usuario inexistente")
-    return user_role
 #verifica se determinado cargo tem tal permissão
-def has_permission(user_id: int,required_permission: str,session: SessionDep):
-    role = get_role(user_id,session)
+def has_permission(role: str,required_permission: str,session: SessionDep):
     if role not in PERMISSIONS:
         raise HTTPException(status_code=400,detail="cargo inexistente")
     role_permission = PERMISSIONS[role]
     return "*" in role_permission or required_permission in role_permission
-def require_permission(user_id: int, required_permission: str, session: SessionDep):
-    if not has_permission(user_id,required_permission,session):
+def require_permission(role: str, required_permission: str, session: SessionDep):
+    if not has_permission(role,required_permission,session):
         raise HTTPException(status_code=403,detail="Não autorizado")
     return True
