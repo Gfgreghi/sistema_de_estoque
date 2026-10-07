@@ -1,6 +1,5 @@
 <h1><div align=center>SISTEMA WMS</div></h1>
 
----
 
 # Sobre o Projeto
 
@@ -112,7 +111,7 @@ Por fim, execute a API usando o comando:
 ```bash
 uvicorn app.main:app --reload
 ```
-a partir disso, sera possível utilizar a API, apartir do caminho descrito na saida do terminal.
+com isso, sera possível utilizar a API, apartir do caminho descrito na saida do terminal.
 
 # Documentação da API
 
@@ -138,3 +137,9 @@ app/
 ├── schemas/ -> schemas de entrada e saida
 └── main.py -> inicialização da aplicação
 ```
+
+# Proximos Passos
+
+- [ ] Refactor com o objetivo de padronizar nomenclaturas de funções e variaveis.
+- [ ] aplicar Containers no projeto utilizando Docker
+- [ ] Tornar o projeto completamente assincrono
