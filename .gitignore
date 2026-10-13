@@ -1,4 +1,32 @@
+# Ambiente virtual local
+.venv/
+venv/
+env/
+
+# Python e compiladores
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Ambiente e Credenciais (CRUCIAL)
 .env
-.venv
-__pycache__
-banco.db
+
+# Docker e Banco de Dados Local
+.docker_data/
+**/mysql_data/
+
+# VS-Code, IDEs e Sistemas Operacionais 
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Arquivo de configuração de log do Alembic 
+*.log
+
+*-workspace

@@ -12,7 +12,7 @@ def criar_token(id_usuario: int,tipo: str="access_token",duracao_token=timedelta
         duracao_token= timedelta(days=7)
     data_expiracao =datetime.now(timezone.utc) + duracao_token
     dic_info = {"sub": str(id_usuario), "exp": data_expiracao, "type": tipo}
-    jwt_codificado = jwt.encode(dic_info, settings.SECRET_KEY,settings.ALGORITHM)
+    jwt_codificado = jwt.encode(dic_info, settings.SECRET_KEY.get_secret_value(),settings.ALGORITHM)
     token = jwt_codificado
     return token
 

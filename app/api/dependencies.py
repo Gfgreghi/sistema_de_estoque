@@ -26,7 +26,7 @@ def current_user(user_id: int, session: SessionDep):
 tokenDep = Annotated[str,Depends(oauth2_schema)]
 def decode_token(token: tokenDep):
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, settings.ALGORITHM)
+        payload = jwt.decode(token, settings.SECRET_KEY.get_secret_value(), settings.ALGORITHM)
     except JWTError:
         raise HTTPException(status_code=401,detail="Acesso negado, verifique a validade do token")
 
