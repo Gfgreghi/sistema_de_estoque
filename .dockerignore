@@ -1,0 +1,25 @@
+#ambiente virtual
+.venv/
+venv/
+#python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+#ambiente
+.env
+#git e github
+.git/
+.gitignore
+README.md
+#docker
+.dockerignore
+#vs-code e sistema operacional
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
