@@ -9,7 +9,7 @@ Esse projeto consiste em um sistema back-end **FastAPI** de um software de geren
 
 # Stack Tecnologica
 
-![Python](https://img.shields.io/badge/python-%233670A0.svg?style=for-the-badge&logo=python&logoColor=ffdd54) ![FastAPI](https://img.shields.io/badge/fastapi-%23009688.svg?style=for-the-badge&logo=fastapi&logoColor=white) ![Pydantic](https://img.shields.io/badge/pydantic-%23E92063.svg?style=for-the-badge&logo=pydantic&logoColor=white) ![JWT](https://img.shields.io/badge/json%20web%20tokens-%23000000.svg?style=for-the-badge&logo=jsonwebtokens&logoColor=white) ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![Python](https://img.shields.io/badge/python-%233670A0.svg?style=for-the-badge&logo=python&logoColor=ffdd54) ![FastAPI](https://img.shields.io/badge/fastapi-%23009688.svg?style=for-the-badge&logo=fastapi&logoColor=white) ![MySQL](https://img.shields.io/badge/mysql-%234479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)![SQLAlchemy](https://img.shields.io/badge/sqlalchemy-%23D71F00.svg?style=for-the-badge&logo=sqlalchemy&logoColor=white) ![Pydantic](https://img.shields.io/badge/pydantic-%23E92063.svg?style=for-the-badge&logo=pydantic&logoColor=white) ![JWT](https://img.shields.io/badge/json%20web%20tokens-%23000000.svg?style=for-the-badge&logo=jsonwebtokens&logoColor=white) 
 
 
 # Funcionalidades
@@ -58,7 +58,7 @@ Usuarios Comuns podem somente visualizar e alterar suas proprias informações, 
 
 # Instalação e Configuração
 ## Pré Requisitos:
-* **Python 3.x**
+* **Docker & Docker Compose**
 * **GIT**
 ## Clonando o repositorio
 O primeiro passo para fazer a instalação é clonar o repositorio do Github apartir do comando a seguir:
@@ -67,26 +67,6 @@ git clone https://github.com/Gfgreghi/sistema_de_estoque/
 
 ```
 
-## Criando um ambiente virtual
-O passo seguinte é criar um ambiente virtual python, para isso é necessario executar o seguinte comando na pasta raiz do projeto:
-```bash
-python -m venv .venv
-```
-Logo após, para ativar o ambiente virtual deve rodar um dos comandos a seguir de acordo com o sistema operacional utilizado:
-
-### Linux/MacOS
-```bash
-source .venv/bin/activate
-```
-### Windows
-```bash
-.\.venv\Scripts\activate
-```
-## Instalação das dependências
-Com o ambiente virtual ativado, é necessario instalar as dependências do projeto apartir do arquivo `requirements.txt`:
-```bash
-pip install -r requirements.txt
-```
 ## Configuração do Ambiente
 O sistema utiliza variáveis de ambiente para configurar parâmetros relacionados à autenticação e ao banco de dados.
 
@@ -95,24 +75,17 @@ Crie um arquivo `.env` na raiz do projeto
 Nele deve conter as seguintes variáveis:
 
 ```env
-SECRET_KEY=sua_chave_secreta 
-ALGORITHM=HS256 
-ACCESS_TOKEN_EXPIRE_MINUTES=30 
-DATABASE_URL=sqlite:///./banco.db
+SECRET_KEY=sua_chave_secreta
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+MYSQL_DATABASE=storage
+MYSQL_USER=storage_app
+MYSQL_PASSWORD=sua_senha
+MYSQL_ROOT_PASSWORD=outra_senha_forte
 ```
 
-## Configuração do Banco de Dados
-Agora é necessario executar a migração do banco de dados com:
-```bash
-alembic upgrade head
-```
-## Executando a aplicação
-Por fim, execute a API usando o comando:
-```bash
-uvicorn app.main:app --reload
-```
-com isso, sera possível utilizar a API, apartir do caminho descrito na saida do terminal.
-
+## 
 # Documentação da API
 
 A API possui documentação interativa baseada em OpenAPI, disponibilizada pelo FastAPI.
