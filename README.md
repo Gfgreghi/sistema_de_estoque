@@ -70,7 +70,7 @@ git clone https://github.com/Gfgreghi/sistema_de_estoque/
 ## Configuração do Ambiente
 O sistema utiliza variáveis de ambiente para configurar parâmetros relacionados à autenticação e ao banco de dados.
 
-Crie um arquivo `.env` na raiz do projeto
+Crie um arquivo `.env` na raiz do projeto com base no arquivo `env.example`
 
 Nele deve conter as seguintes variáveis:
 
@@ -85,14 +85,30 @@ MYSQL_PASSWORD=sua_senha
 MYSQL_ROOT_PASSWORD=outra_senha_forte
 ```
 
-## 
+## Inicializando a API
+Para inicializar a API é necessario iniciar os containers Docker apartir do `docker-compose.yml`
+
+Isso pode ser feito apartir do comando:
+```bash
+docker compose up 
+```
+ou
+```bash
+docker compose up -d
+```
+apartir desse momento, é possivel utilizar a API apartir da url:
+
+```url
+http://localhost:8000
+```
+
 # Documentação da API
 
 A API possui documentação interativa baseada em OpenAPI, disponibilizada pelo FastAPI.
 
 A documentação pode ser acessada através de:
 
-http://127.0.0.1:8000/docs
+http://localhost:8000/docs
 
 # Estrutura do projeto
 
