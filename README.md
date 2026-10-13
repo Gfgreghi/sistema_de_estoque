@@ -130,7 +130,8 @@ app/
 
 # Proximos Passos
 
+- [x] Aplicar Containers no projeto utilizando Docker
 - [ ] Refactor com o objetivo de padronizar nomenclaturas de funções e variaveis.
 - [ ] Tornar a documentação mais clara e util
-- [ ] Aplicar Containers no projeto utilizando Docker
+- [ ] Migrar as sintaxe para um padrão mais atualizado
 - [ ] Tornar o projeto completamente assincrono
